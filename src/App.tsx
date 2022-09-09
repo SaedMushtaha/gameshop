@@ -1,24 +1,41 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { Temporal } from 'temporal-polyfill';
+import { Header, Loading } from './components';
+import { gameList } from './rawg-api';
+import Home from './pages/Home';
+import './scss/App.scss';
 
 function App() {
+  const [games, setGames] = useState([]);
+  const [cartItems] = useState([]);
+
+  useEffect(() => {
+    const loadGames = async () => {
+      const today = Temporal.Now.plainDateISO();
+      const threeMonthsAgo = today.subtract({ months: 3 });
+      const response = await gameList({
+        page_size: 50,
+        dates: `${threeMonthsAgo},${today}`,
+      });
+      setGames(response.results as []);
+    };
+    loadGames();
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+      <Header cartItems={cartItems} />
+      <Routes>
+        <Route
+          path="/"
+          element={games.length
+            ? <Home games={games} />
+            : <Loading />
+          }
         >
-          Learn React
-        </a>
-      </header>
+        </Route>
+      </Routes>
     </div>
   );
 }
