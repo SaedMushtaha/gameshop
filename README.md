@@ -19,7 +19,7 @@
   
 
   <h3 align="center">Game Shop
-    <a href="#">View Demo</a></h3>
+    <a href="https://gamesshop.saedmu.com/">View Demo</a></h3>
 
   <p align="center">
 
