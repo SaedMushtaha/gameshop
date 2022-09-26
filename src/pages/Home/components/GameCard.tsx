@@ -31,6 +31,7 @@ function GameCard(props: Props) {
         layout: { type: 'spring', stiffness: 30 },
         scale: { duration: 0.15 },
       }}
+      style={{ backgroundImage: `url(${backgroundImage})` }}
       onClick={() => navigate(`/games/${id}`)}
     >
       {/* <BackgroundImage
