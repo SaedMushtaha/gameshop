@@ -77,6 +77,7 @@ function GameDetails(props: Props) {
                 <div
                   key={`img-${screenshot.id}`}
                   className="Image"
+                  style={{ backgroundImage: `url(${screenshot.image})` }}
                 >
                   {/* <BackgroundImage
                     className="BackgroundImage"
