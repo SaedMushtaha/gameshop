@@ -1,48 +1,61 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useScrollTo } from 'framer-motion-scroll-to-hook';
 import { RiArrowRightLine } from 'react-icons/ri';
-import { Footer, Transition, Button } from '../../components';
+import {
+  Footer,
+  Transition,
+  Button,
+  Loading,
+} from '../../components';
 import { Game } from '../../types/Game.types';
 import GameCard from './components/GameCard';
 
 interface Props {
-  games: Game[],
+  setGames: (games: Game[]) => void,
+  loadGames: (value?: string) => Promise<Game[]>,
 }
 
 const cardDuration = 10;
-const cycleArray = (array: Game[]) => {
+const cycleArray = (array: unknown[]) => {
   const newArray = [...array];
-  newArray.push(newArray.shift() as Game);
+  newArray.push(newArray.shift());
   return newArray;
 };
-const getRandomGames = (games: Game[]): Game[] => {
-  const randomGames = new Set();
-  while (randomGames.size < 4) {
-    const index = Math.floor(Math.random() * games.length);
-    randomGames.add(games[index]);
+const getRandomItems = (items: unknown[], length: number) => {
+  const randomItems = new Set();
+  while (randomItems.size < length) {
+    const index = Math.floor(Math.random() * items.length);
+    randomItems.add(items[index]);
   }
-  return [...randomGames] as Game[];
+  return [...randomItems];
 };
 
-
 function Home(props: Props) {
-  const { games } = props;
-  const [homeGames, setHomeGames] = useState(getRandomGames(games));
+  const { setGames, loadGames } = props;
+  const [homeGames, setHomeGames] = useState<Game[]>();
+  const navigate = useNavigate();
   const scrollTo = useScrollTo();
 
   useEffect(() => {
+    let interval: NodeJS.Timer;
+    (async () => {
+      const loadedGames = await loadGames();
+      const homeGames = getRandomItems(loadedGames, 4) as Game[];
+      setGames(loadedGames);
+      setHomeGames(homeGames);
+      interval = setInterval(() => {
+        setHomeGames(games => cycleArray(games as Game[]) as Game[]);
+      }, cardDuration * 1000);
+    })();
     scrollTo();
-    const interval = setInterval(() => {
-      setHomeGames(games => cycleArray(games));
-    }, cardDuration * 1000);
     return () => clearInterval(interval);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <>
-      <Transition className="Home" direction="left">
-        <div className="Grid">
+    <Transition className="Home" direction="left">
+      {homeGames
+        ? < Transition className="Grid" direction="left">
           {homeGames.map(({ id, name, background_image }, i) => (
             <GameCard
               key={id}
@@ -53,15 +66,17 @@ function Home(props: Props) {
               big={i === 0}
             />
           ))}
-          <Link to="games" className="Store">
-            <Button>
-              Go to the store <RiArrowRightLine />
-            </Button>
-          </Link>
-        </div>
-        <Footer />
-      </Transition>
-    </>
+          <Button
+            className="Store"
+            handleClick={() => navigate('games')}
+          >
+            Go to the store <RiArrowRightLine />
+          </Button>
+        </Transition>
+        : <Loading />
+      }
+      <Footer />
+    </Transition>
   );
 }
 
