@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+// import { BackgroundImage } from 'react-image-and-background-image-fade';
 import {
   RiGlobalLine,
   RiWindowsFill,
@@ -17,6 +18,7 @@ import {
 } from 'react-icons/si';
 import { Transition, Button } from '../../../components';
 import { Game } from '../../../types/Game.types';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
   game: Game;
@@ -54,14 +56,24 @@ function GameCard(props: Props) {
   const releasedDate = new Date(released).toLocaleDateString();
   const genreList = genres.map(({ name }) => name).join(', ');
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className="GameCard">
       <motion.div
         className="Image"
         whileHover={{ height: 180 }}
-        style={{ backgroundImage: `url(${background_image})` }}
-      />
+        onClick={() => navigate(`/games/${id}`)}
+      >
+        {/* <BackgroundImage
+          className="BackgroundImage"
+          wrapperClassName="Wrapper"
+          src={background_image || ''}
+          transitionTime="1s"
+          isResponsive
+          lazyLoad
+        /> */}
+      </motion.div>
       <motion.div
         className="Info"
         whileHover={{ height: 180 }}
@@ -77,7 +89,9 @@ function GameCard(props: Props) {
           }
           ${price}
         </div>
-        <Button className="Name">{name}</Button>
+        <Button className="Name" handleClick={() => navigate(`/games/${id}`)}>
+          {name}
+        </Button>
         <AnimatePresence>
           {isHovered && (
             <Transition className="MoreInfo">

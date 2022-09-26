@@ -1,4 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+// import { BackgroundImage } from 'react-image-and-background-image-fade';
 
 interface Props {
   id: number,
@@ -16,6 +18,7 @@ function GameCard(props: Props) {
     duration,
     big = false,
   } = props;
+  const navigate = useNavigate();
 
   return (
     <motion.div
@@ -28,28 +31,36 @@ function GameCard(props: Props) {
         layout: { type: 'spring', stiffness: 30 },
         scale: { duration: 0.15 },
       }}
-      style={{ backgroundImage: `url(${backgroundImage})` }}
+      onClick={() => navigate(`/games/${id}`)}
     >
-      <div className="Overlay">
-        <AnimatePresence exitBeforeEnter>
-          <motion.h3
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            {name}
-          </motion.h3>
-          {big && (
-            <motion.div
-              key={`progress-${id}`}
-              className="ProgressBar"
-              initial={{ width: 0 }}
-              animate={{ width: '100%', transition: { duration } }}
-              exit={{ opacity: 0 }}
-            />
-          )}
-        </AnimatePresence>
-      </div>
-    </motion.div>
+      {/* <BackgroundImage
+        className="BackgroundImage"
+        wrapperClassName="Wrapper"
+        src={backgroundImage}
+        transitionTime="1s"
+        isResponsive
+      > */}
+        <div className="Overlay">
+          <AnimatePresence exitBeforeEnter>
+            <motion.h3
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              {name}
+            </motion.h3>
+            {big && (
+              <motion.div
+                key={`progress-${id}`}
+                className="ProgressBar"
+                initial={{ width: 0 }}
+                animate={{ width: '100%', transition: { duration } }}
+                exit={{ opacity: 0 }}
+              />
+            )}
+          </AnimatePresence>
+        </div>
+      {/* </BackgroundImage> */}
+    </motion.div >
   );
 }
 
